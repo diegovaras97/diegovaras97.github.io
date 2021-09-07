@@ -14,6 +14,8 @@ const CitiesList = () => {
     value > pages ? setCurrentPage(pages) : setCurrentPage(value);
   }
 
+  const handleFocus = (event) => event.target.select();
+
   useEffect(() => {
     fetch(
       `https://us-central1-taller-integracion-310700.cloudfunctions.net/tarea-1-2021-2/53739/users?_page=${currentPage}`
@@ -47,6 +49,7 @@ const CitiesList = () => {
           pageNumber / 10
         )}):{" "}
         <input
+          onFocus={handleFocus}
           type="text"
           pattern="[0-9]*"
           onInput={(e) => handleEvent(e)}

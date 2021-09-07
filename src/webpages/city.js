@@ -20,6 +20,10 @@ const City = (props) => {
     }
   });
 
+  function handleClick(e) {
+    console.log(e);
+  }
+
   useEffect(() => {
     fetch(
       `https://us-central1-taller-integracion-310700.cloudfunctions.net/tarea-1-2021-2/53739/cities/${user_id}`
@@ -67,10 +71,11 @@ const City = (props) => {
         </h4>
         {hola.map(function (object, i) {
           return (
-            <div>
+            <div style={{ marginLeft: 20 }}>
               <br></br>
-              <h3>Nombre: {object.name}</h3>
-              <h3>Apellido: {object.lastName}</h3>
+              <button onClick={handleClick}>
+                {object.name} {object.lastName}
+              </button>
               <br></br>
             </div>
           );

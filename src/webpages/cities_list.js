@@ -34,6 +34,8 @@ const CitiesList = () => {
       );
   }, [currentPage]);
 
+  const handleFocus = (event) => event.target.select();
+
   if (error) {
     return <div>Error: {error.message}</div>;
   } else if (!isLoaded) {
@@ -47,6 +49,7 @@ const CitiesList = () => {
           pageNumber / 10
         )}):{" "}
         <input
+          onFocus={handleFocus}
           type="text"
           pattern="[0-9]*"
           onInput={(e) => handleEvent(e)}
