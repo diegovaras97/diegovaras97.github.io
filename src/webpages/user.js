@@ -8,11 +8,9 @@ const User = (props) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [user, setUser] = useState([]);
 
-  const [creditError, setCreditError] = useState(null);
   const [creditIsLoaded, setCreditIsLoaded] = useState(false);
   const [credit, setCredit] = useState([]);
 
-  const [citiesError, setCitiesError] = useState(null);
   const [citiesAreLoaded, setCitiesAreLoaded] = useState(false);
   const [cities, setCities] = useState([]);
 
@@ -45,7 +43,7 @@ const User = (props) => {
         },
         (error) => {
           setCreditIsLoaded(true);
-          setCreditError(error);
+          setError(error);
         }
       );
   }, []);
@@ -62,17 +60,13 @@ const User = (props) => {
         },
         (error) => {
           setCitiesAreLoaded(true);
-          setCitiesError(error);
+          setError(error);
         }
       );
   }, []);
 
-  if (error || creditError || citiesError) {
-    return (
-      <div>
-        Error: {error.message}, {creditError.message}, {citiesError.message}
-      </div>
-    );
+  if (error) {
+    return <div>Error: {error.message}</div>;
   } else if (!isLoaded || !creditIsLoaded || !citiesAreLoaded) {
     return <div>Loading...</div>;
   } else {
@@ -86,26 +80,34 @@ const User = (props) => {
         <h3>Correo electrónico: {user.email}</h3>
         <h3>Fecha de nacimiento: {user.birthdate}</h3>
         <hr></hr>
-        <h4>Datos tarjeta de crédito:</h4>
+        <h4 style={{ textDecorationLine: "underline" }}>
+          Datos tarjeta de crédito:
+        </h4>
         {credit.map(function (object, i) {
           return (
             <div>
+              <br></br>
               <h3>ID: {object.id}</h3>
               <h3>Numero de tarjeta: {object.creditCard}</h3>
               <h3>CVV: {object.CVV}</h3>
+              <br></br>
             </div>
           );
         })}
 
         <hr></hr>
-        <h4>Ciudades agregadas por el usuario:</h4>
+        <h4 style={{ textDecorationLine: "underline" }}>
+          Ciudades agregadas por el usuario:
+        </h4>
         {cities.map(function (object, i) {
           return (
             <div>
+              <br></br>
               <h3>Dirección: {object.address}</h3>
               <h3>Ciudad: {object.city.name}</h3>
               <h3>País: {object.city.country}</h3>
               <h3>Codigo Postal: {object.zip}</h3>
+              <br></br>
             </div>
           );
         })}
