@@ -111,7 +111,7 @@ const User = (props) => {
             </div>
           );
         })}
-        <Link to={"/users"}>Volver</Link>
+        <Link to={"/users"}>Ir a lista de usuarios</Link>
         <hr></hr>
       </div>
     );

@@ -74,7 +74,7 @@ const CitiesList = () => {
           ))}
         </ul>
         <Link to={"/"} style={{ fontSize: 20 }}>
-          Volver
+          Ir a inicio
         </Link>
       </div>
     );

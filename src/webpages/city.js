@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 const City = (props) => {
   const user_id = props.location.pathname.split("/")[2];
@@ -8,14 +8,15 @@ const City = (props) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [city, setCity] = useState([]);
   const [people, setPeople] = useState([]);
-  const [hola, setHola] = useState([]);
+  const [users, setUsers] = useState([]);
+  const history = useHistory();
 
   useEffect(() => {
     console.log(people);
     if (people.length > 0) {
       Promise.all(responses).then((a) => {
         let ret = a;
-        setHola(ret);
+        setUsers(ret);
       });
     }
   });
@@ -69,11 +70,11 @@ const City = (props) => {
         <h4 style={{ textDecorationLine: "underline" }}>
           Usuarios presentes en la ciudad:
         </h4>
-        {hola.map(function (object, i) {
+        {users.map(function (object, i) {
           return (
             <div style={{ marginLeft: 20 }}>
               <br></br>
-              <button onClick={handleClick}>
+              <button onClick={(e) => history.push(`/user/${object.id}`)}>
                 {object.name} {object.lastName}
               </button>
               <br></br>
@@ -81,7 +82,7 @@ const City = (props) => {
           );
         })}
         <hr></hr>
-        <Link to={"/cities"}>Volver</Link>
+        <Link to={"/cities"}>Ir a lista de ciudades</Link>
       </div>
     );
   }
