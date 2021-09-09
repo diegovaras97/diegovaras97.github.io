@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 
 const City = (props) => {
@@ -21,10 +21,6 @@ const City = (props) => {
     }
   });
 
-  function handleClick(e) {
-    console.log(e);
-  }
-
   useEffect(() => {
     fetch(
       `https://us-central1-taller-integracion-310700.cloudfunctions.net/tarea-1-2021-2/53739/cities/${user_id}`
@@ -41,7 +37,7 @@ const City = (props) => {
           setError(error);
         }
       );
-  }, [city]);
+  }, [user_id]);
 
   const responses = people.map(async (user_id) => {
     try {

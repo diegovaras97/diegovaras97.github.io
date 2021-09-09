@@ -29,7 +29,7 @@ const User = (props) => {
           setError(error);
         }
       );
-  }, []);
+  }, [user_id]);
 
   useEffect(() => {
     fetch(
@@ -46,7 +46,7 @@ const User = (props) => {
           setError(error);
         }
       );
-  }, []);
+  }, [user_id]);
 
   useEffect(() => {
     fetch(
@@ -63,7 +63,7 @@ const User = (props) => {
           setError(error);
         }
       );
-  }, []);
+  }, [user_id]);
 
   if (error) {
     return <div>Error: {error.message}</div>;
@@ -103,10 +103,15 @@ const User = (props) => {
           return (
             <div>
               <br></br>
-              <h3>Dirección: {object.address}</h3>
-              <h3>Ciudad: {object.city.name}</h3>
-              <h3>País: {object.city.country}</h3>
-              <h3>Codigo Postal: {object.zip}</h3>
+              <div>
+                <h3>Dirección: {object.address}</h3>
+                {console.log(object.city.id)}
+                <Link style={{ fontSize: 24 }} to={`/city/${object.city.id}`}>
+                  Ciudad: {object.city.name}
+                </Link>
+                <h3>País: {object.city.country}</h3>
+                <h3>Codigo Postal: {object.zip}</h3>
+              </div>
               <br></br>
             </div>
           );
