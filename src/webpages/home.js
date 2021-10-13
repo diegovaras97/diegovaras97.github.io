@@ -1,38 +1,95 @@
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import ChatRoom from "./chatRoom";
 
-const Home = () => {
-  return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          marginLeft: 100,
-          marginTop: 100,
-          textDecorationLine: "underline",
-        }}
-      >
-        <img
-          height="60"
-          alt="nyan_cat_gif"
-          src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/36cf953e-bc1d-49bd-9dde-dff42a74e146/d46nsar-dacdd7d1-6a32-4550-9b9d-b3dd7b2d9c27.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzM2Y2Y5NTNlLWJjMWQtNDliZC05ZGRlLWRmZjQyYTc0ZTE0NlwvZDQ2bnNhci1kYWNkZDdkMS02YTMyLTQ1NTAtOWI5ZC1iM2RkN2IyZDljMjcuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.1q8n0E5yWiPMY-Jis-yT-iDj7jgElkyfkLAd4Xs30Dg"
-        ></img>
-        <h1 style={{ marginLeft: 20 }}>Bienvenido a Panchillapp!</h1>
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+import icon from "leaflet/dist/images/marker-icon.png";
+import iconShadow from "leaflet/dist/images/marker-shadow.png";
+
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
+
+const Home = (props) => {
+  const [error] = useState(null);
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  } else {
+    return (
+      <div>
+        <hr></hr>
+        <h1>App de flota de camiones</h1>
+        <hr></hr>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            width: "100%",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              flexBasis: "100%",
+              flex: 1,
+              margin: 8,
+            }}
+          >
+            <div style={{ display: "table-row" }}>
+              <h3>Mapa</h3>
+              <div
+                style={{
+                  width: "100%",
+                  height: "400px",
+                  boxShadow: "5px 5px 5px #888",
+                }}
+              >
+                <MapContainer
+                  center={[51.505, -0.09]}
+                  zoom={13}
+                  scrollWheelZoom={false}
+                  style={{ height: "400px" }}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <Marker position={[51.505, -0.09]}>
+                    <Popup>
+                      A pretty CSS3 popup. <br /> Easily customizable.
+                    </Popup>
+                  </Marker>
+                </MapContainer>
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              flexBasis: "100%",
+              flex: 1,
+              margin: 8,
+            }}
+          >
+            <div style={{ display: "table-row" }}>
+              <h3>Chat</h3>
+              <ChatRoom></ChatRoom>
+            </div>
+          </div>
+        </div>
+        Y aca abajo lo de los estados
       </div>
-      <div
-        style={{
-          display: "block",
-          marginLeft: 500,
-          fontSize: 36,
-        }}
-      >
-        <br></br>
-        <br></br>
-        <Link to={`./users`}> Ver lista de usuarios </Link>
-        <br></br>
-        <br></br>
-        <Link to={`./cities`}> Ver lista de ciudades </Link>
-      </div>
-    </div>
-  );
+    );
+  }
 };
+
 export default Home;
