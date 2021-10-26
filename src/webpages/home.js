@@ -4,6 +4,7 @@ import {
   TileLayer,
   Marker,
   Popup,
+  useMap,
   Polyline,
 } from "react-leaflet";
 import ChatRoom from "./chatRoom";
@@ -32,7 +33,17 @@ const Home = (props) => {
   const [trucks, setTrucks] = useState([]);
   const socketRef = useRef();
 
+  function ChangeView({ center, zoom }) {
+    const map = useMap();
+    map.setView(center, zoom);
+    return null;
+  }
+
   const CSS_COLOR_NAMES = [
+    "red",
+    "blue",
+    "brown",
+    "black",
     "SeaGreen",
     "SeaShell",
     "Sienna",
@@ -54,16 +65,19 @@ const Home = (props) => {
     return arr[Math.floor(arr.length * Math.random())];
   }
   useEffect(() => {
-    console.log("HOla");
-    socketRef.current = socketIOClient.connect(SOCKET_SERVER_URL, {
-      path: "/trucks",
-    });
-    socketRef.current.emit(TRUCK_EVENT);
-    socketRef.current.on(TRUCK_EVENT, (message) => {
-      setTrucks(message);
-      console.log(message);
-    });
+    socketRef.current.on(
+      TRUCK_EVENT,
+      (message) => {
+        setTrucks(message);
+        console.log(message);
+      },
+      []
+    );
+  }, []);
+  socketRef.current = socketIOClient.connect(SOCKET_SERVER_URL, {
+    path: "/trucks",
   });
+  socketRef.current.emit(TRUCK_EVENT);
 
   if (error) {
     return <div>Error: {error.message}</div>;
@@ -110,11 +124,13 @@ const Home = (props) => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
                   {trucks.map((truck, i) => (
-                    <div>
+                    <div key={i}>
                       <Polyline
                         positions={[truck.origin, truck.destination]}
                         color={randomChoice(CSS_COLOR_NAMES)}
                       />
+
+                      <ChangeView center={truck.origin} zoom={10} />
                       <Marker position={truck.origin}>
                         <Popup>Origen de {truck.truck}</Popup>
                       </Marker>
