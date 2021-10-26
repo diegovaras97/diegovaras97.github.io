@@ -10,13 +10,15 @@ const useChat = () => {
   const socketRef = useRef();
 
   useEffect(() => {
-    socketRef.current = socketIOClient.connect(SOCKET_SERVER_URL);
+    socketRef.current = socketIOClient.connect(SOCKET_SERVER_URL, {
+      path: "/trucks",
+    });
     socketRef.current.on(NEW_CHAT_MESSAGE_EVENT, (message) => {
       const incomingMessage = {
         ...message,
-        ownedByCurrentUser: message.senderId === socketRef.current.id,
+        ownedByCurrentUser: message.name === socketRef.current.id,
       };
-      setMessages((messages) => [...messages, incomingMessage]);
+      setMessages((messages) => [...messages, message]);
     });
 
     // Destroys the socket reference
@@ -26,11 +28,10 @@ const useChat = () => {
     };
   }, []);
 
-  const sendMessage = (messageBody) => {
+  const sendMessage = (messageBody, name) => {
     socketRef.current.emit(NEW_CHAT_MESSAGE_EVENT, {
-      date: Date.now().toString(),
       message: messageBody,
-      name: socketRef.current.id,
+      name: name,
     });
   };
 

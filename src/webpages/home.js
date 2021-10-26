@@ -1,5 +1,11 @@
-import React, { useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+} from "react-leaflet";
 import ChatRoom from "./chatRoom";
 
 import L from "leaflet";
@@ -15,8 +21,49 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
+const socketIOClient = require("socket.io-client");
+const SOCKET_SERVER_URL =
+  "ws://tarea-3-websocket.2021-2.tallerdeintegracion.cl";
+
+const TRUCK_EVENT = "TRUCKS"; // Name of the event
+
 const Home = (props) => {
   const [error] = useState(null);
+  const [trucks, setTrucks] = useState([]);
+  const socketRef = useRef();
+
+  const CSS_COLOR_NAMES = [
+    "SeaGreen",
+    "SeaShell",
+    "Sienna",
+    "SkyBlue",
+    "SlateBlue",
+    "SpringGreen",
+    "SteelBlue",
+    "Tan",
+    "Teal",
+    "Thistle",
+    "Tomato",
+    "Turquoise",
+    "Violet",
+    "Yellow",
+    "YellowGreen",
+  ];
+
+  function randomChoice(arr) {
+    return arr[Math.floor(arr.length * Math.random())];
+  }
+  useEffect(() => {
+    console.log("HOla");
+    socketRef.current = socketIOClient.connect(SOCKET_SERVER_URL, {
+      path: "/trucks",
+    });
+    socketRef.current.emit(TRUCK_EVENT);
+    socketRef.current.on(TRUCK_EVENT, (message) => {
+      setTrucks(message);
+      console.log(message);
+    });
+  });
 
   if (error) {
     return <div>Error: {error.message}</div>;
@@ -54,7 +101,7 @@ const Home = (props) => {
               >
                 <MapContainer
                   center={[51.505, -0.09]}
-                  zoom={13}
+                  zoom={1}
                   scrollWheelZoom={false}
                   style={{ height: "400px" }}
                 >
@@ -62,11 +109,20 @@ const Home = (props) => {
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
-                  <Marker position={[51.505, -0.09]}>
-                    <Popup>
-                      A pretty CSS3 popup. <br /> Easily customizable.
-                    </Popup>
-                  </Marker>
+                  {trucks.map((truck, i) => (
+                    <div>
+                      <Polyline
+                        positions={[truck.origin, truck.destination]}
+                        color={randomChoice(CSS_COLOR_NAMES)}
+                      />
+                      <Marker position={truck.origin}>
+                        <Popup>Origen de {truck.truck}</Popup>
+                      </Marker>
+                      <Marker position={truck.destination}>
+                        <Popup>Destino de {truck.truck} </Popup>
+                      </Marker>
+                    </div>
+                  ))}
                 </MapContainer>
               </div>
             </div>
