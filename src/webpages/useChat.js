@@ -14,10 +14,6 @@ const useChat = () => {
       path: "/trucks",
     });
     socketRef.current.on(NEW_CHAT_MESSAGE_EVENT, (message) => {
-      const incomingMessage = {
-        ...message,
-        ownedByCurrentUser: message.name === socketRef.current.id,
-      };
       setMessages((messages) => [...messages, message]);
     });
 

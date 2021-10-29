@@ -31,6 +31,7 @@ const TRUCK_EVENT = "TRUCKS"; // Name of the event
 const Home = (props) => {
   const [error] = useState(null);
   const [trucks, setTrucks] = useState([]);
+
   const socketRef = useRef();
 
   function ChangeView({ center, zoom }) {
@@ -64,16 +65,77 @@ const Home = (props) => {
   function randomChoice(arr) {
     return arr[Math.floor(arr.length * Math.random())];
   }
+
+  function handleRepair(code) {
+    socketRef.current.emit("CHAT", {
+      message: `Esta siendo atendido el camión ${code}`,
+      name: "Alerta de Sistema",
+    });
+    socketRef.current.emit("FIX", {
+      code: code,
+    });
+  }
+
   useEffect(() => {
     socketRef.current.on(
       TRUCK_EVENT,
       (message) => {
-        setTrucks(message);
-        console.log(message);
+        var out = message.map((x) => {
+          x.status = "Ok";
+          x.fails = "Ninguna";
+          x.actual_position = false;
+
+          return x;
+        });
+        setTrucks(out);
       },
       []
     );
   }, []);
+  useEffect(() => {
+    socketRef.current.on(
+      "FAILURE",
+      (message) => {
+        var trucks2 = [...trucks];
+        trucks2.map((truck) => {
+          if (truck.code === message.code) {
+            truck.status = "Not ok";
+            truck.fails = message.source;
+            setTrucks(trucks2);
+          }
+        });
+      },
+      []
+    );
+    socketRef.current.on(
+      "POSITION",
+      (message) => {
+        var trucks2 = [...trucks];
+        trucks2.map((truck) => {
+          if (truck.code === message.code) {
+            truck.actual_position = message.position;
+            setTrucks(trucks2);
+          }
+        });
+      },
+      []
+    );
+
+    socketRef.current.on(
+      "FIX",
+      (message) => {
+        var trucks2 = [...trucks];
+        trucks2.map((truck) => {
+          if (truck.code === message.code) {
+            truck.status = "Ok";
+            truck.fails = "Ninguna";
+            setTrucks(trucks2);
+          }
+        });
+      },
+      []
+    );
+  }, [trucks]);
   socketRef.current = socketIOClient.connect(SOCKET_SERVER_URL, {
     path: "/trucks",
   });
@@ -130,13 +192,12 @@ const Home = (props) => {
                         color={randomChoice(CSS_COLOR_NAMES)}
                       />
 
-                      <ChangeView center={truck.origin} zoom={10} />
-                      <Marker position={truck.origin}>
-                        <Popup>Origen de {truck.truck}</Popup>
-                      </Marker>
-                      <Marker position={truck.destination}>
-                        <Popup>Destino de {truck.truck} </Popup>
-                      </Marker>
+                      <ChangeView center={trucks[0].origin} zoom={10} />
+                      {truck.actual_position && (
+                        <Marker position={truck.actual_position}>
+                          <Popup>Destino de {truck.truck} </Popup>
+                        </Marker>
+                      )}
                     </div>
                   ))}
                 </MapContainer>
@@ -158,7 +219,56 @@ const Home = (props) => {
             </div>
           </div>
         </div>
-        Y aca abajo lo de los estados
+        <br></br>
+        <ul>
+          {trucks.map((truck) => (
+            <li key={truck.code}>
+              <div
+                style={{
+                  display: "line",
+                  color: `${truck.status === "Ok" ? "green" : "red"}`,
+                }}
+              >
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <button
+                    style={{
+                      marginLeft: 16,
+                      marginRight: 16,
+                    }}
+                    disabled={truck.status === "Ok"}
+                    onClick={() => handleRepair(truck.code)}
+                  >
+                    {" "}
+                    Reparar
+                  </button>
+                  <h4> Camión : {truck.truck} </h4>
+                  <h6 style={{ marginLeft: 16 }}>
+                    Código: {truck.code} || Motor: {truck.engine} || Estado:{" "}
+                    {truck.status} || Capacidad: {truck.capacity}
+                  </h6>
+                </div>
+
+                <h5 style={{ fontWeight: "bold" }}>
+                  Origen : {truck.origin} → Destino : {truck.destination}
+                </h5>
+                <h5 style={{ fontWeight: "bold" }}>Fallas: {truck.fails}</h5>
+                <h6> Staff:</h6>
+                {truck.staff.map((person) => (
+                  <h6 key={person.name}>
+                    {person.name}, {person.age}
+                  </h6>
+                ))}
+
+                <hr></hr>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     );
   }
