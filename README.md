@@ -1,4 +1,4 @@
-# :bread: PanchillApp
+# :bread: PanchillApp (tarea 3)
 
 :computer: Para acceder a la versión web puedes pulsar [aquí](http://panchillapp.herokuapp.com)
 
